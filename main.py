@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from hashlib import sha256
-from  blockchain import Blockchain
-from  block import Block
+from blockchain import Blockchain
+from block import Block
 from random import randint
 
 blockchain = Blockchain()
 DEBUG = False
+
+def debug(str_print):
+    if(DEBUG):
+        print(str_print)
 
 def hash(data):
     txt = ""
@@ -24,8 +28,19 @@ def validate():
         blockHash = block.getValueHash()
         dataRaw = block.getDataRaw()
         if(hash(dataRaw) in blockHash and blockHash in hash(dataRaw)):
-            if(DEBUG):
-                print("Block - "+blockHash + "Ok\n Previous: "+lastHash+"\n")
+            prevBlock = Block()
+            if(block.getPrev() == ""):
+                debug("Genesys Block")
+                break
+            else:
+                prevBlock = blockchain.getBlock(block.getPrev())
+            prevBlockHash = prevBlock.getValueHash()
+            prevDataRaw = prevBlock.getDataRaw()
+            if(hash(prevDataRaw) in prevBlockHash and prevBlockHash in hash(prevDataRaw)):
+                debug("Block - "+blockHash + "Ok\n Previous: "+lastHash+"\n")
+            else:
+                booCheck=False
+                break
         else:
             booCheck=False
             break
